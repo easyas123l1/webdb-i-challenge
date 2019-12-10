@@ -53,12 +53,27 @@ router.post('/', (req, res) => {
 })
 
 // update accounts
-
 router.put('/:id', (req, res) => {
   const { id } = req.params;
   const accountData = req.body;
 
-
+  knex('accounts').where({ id })
+  .update(accountData).then(count => {
+    if (count > 0) {
+      return knex('accounts')
+      .where({ id })
+      .first()
+      .then(account => {
+        res.status(200).json(account)
+      })
+    } else {
+      res.status(404).json({ message: 'Account not found' })
+    }
+  })
+  .catch(error => {
+    console.log(error);
+    res.status(500).json({ errorMessage: 'Error updating the account' })
+  })
 })
 
 module.exports = router;
