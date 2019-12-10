@@ -6,9 +6,13 @@ const router = express.Router();
 
 // get all accounts
 router.get('/', (req, res) => {
-  knex.select('*').from('accounts').then(e => {
+  knex
+  .select('*')
+  .from('accounts')
+  .then(e => {
     res.status(200).json(e)
-  }).catch(error => {
+  })
+  .catch(error => {
     console.log(error);
     res.status(500).json({ errorMessage: "Error getting the accounts." })
   })
@@ -57,8 +61,10 @@ router.put('/:id', (req, res) => {
   const { id } = req.params;
   const accountData = req.body;
 
-  knex('accounts').where({ id })
-  .update(accountData).then(count => {
+  knex('accounts')
+  .where({ id })
+  .update(accountData)
+  .then(count => {
     if (count > 0) {
       return knex('accounts')
       .where({ id })
@@ -73,6 +79,23 @@ router.put('/:id', (req, res) => {
   .catch(error => {
     console.log(error);
     res.status(500).json({ errorMessage: 'Error updating the account' })
+  })
+})
+
+// delete accounts
+router.delete('/:id', (req, res) => {
+  const { id } = req.params;
+  knex('accounts')
+  .where({ id })
+  .del()
+  .then(count => {
+    return knex.select('*').from('accounts').then(e => {
+      res.status(200).json(e)
+    })
+  })
+  .catch(error => {
+    console.log(error);
+    res.status(500).json({ errorMessage: 'Error deleting the account' })
   })
 })
 
